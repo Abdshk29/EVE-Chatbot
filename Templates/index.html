@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eve</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.1/css/all.min.css" integrity="sha512-5Hs3dF2AEPkpNAR7UiOHba+lRSJNeM2ECkwxUIxC1Q/FLycGTbNapWXB4tP889k5T5Ju8fs4b1P5z/iB4nMfSQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        /* General styling for the page */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #FFFFFF;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Chat container */
+        .chat-container {
+            width: 350px;
+            max-width: 100%;
+            height: 550px;
+            background: linear-gradient(135deg, #151B54, #000000);
+            border-radius: 20px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Header section */
+        .header {
+            background-color: transparent;
+            color: white;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            border-bottom: 1px solid #0955e9;
+        }
+
+        /* Chat messages section */
+        .chat-box {
+            flex-grow: 1;
+            padding: 9px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: #4A6DFF #1a1a1a;
+        }
+
+        /* Scrollbar styling */
+        .chat-box::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb {
+            background: #4A6DFF;
+            border-radius: 8px;
+        }
+
+        .chat-box::-webkit-scrollbar-thumb:hover {
+            background: #3a5bd3;
+        }
+
+        /* Message container */
+        .message-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            position: relative;
+            flex-direction: row-reverse; /* Default for user messages */
+        }
+
+        /* Icon styling */
+        .message-icon {
+            position: relative;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        /* Bot message styling (align to left) */
+        .bot-message {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            color: white;
+            padding: 7px;
+            border-radius: 4px;
+            max-width: 70%;
+            font-size: 12px;
+            line-height: 1.5;
+            align-self: flex-start;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* User message styling (align to right) */
+        .user-message {
+            background: linear-gradient(135deg, #0955e9, #009cff);
+            color: white;
+            padding: 6px;
+            border-radius: 4px;
+            max-width: 70%;
+            font-size: 12px;
+            line-height: 1;
+            align-self: flex-end;
+        }
+        /* Buttons container */
+        .buttons-container {
+            display: flex;
+            gap: 0.5px;
+            margin-top: 0.1px;
+            align-items: center;
+            margin-left: 25px;
+        }
+
+        /* Copy button styling */
+        .copy-button {
+            display: flex;
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+
+        .copy-button i {
+            color: white;
+            font-size: 12px;
+        }
+
+        .copy-button:hover {
+            transform: scale(1.2);
+        }
+
+        /* Reaction buttons styling */
+        .reaction-buttons {
+            display: flex;
+            gap: 0.5px;
+        }
+
+        .reaction-buttons button {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .reaction-buttons button i {
+            color: white;
+            font-size: 12px;
+        }
+
+        .reaction-buttons button:hover {
+            transform: scale(1.2);
+        }
+
+
+        /* Bottom section */
+        .bottom-section {
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+            background-color: transparent;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Input area */
+        .input-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        /* Question buttons */
+        .question-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 10px;
+        }
+
+        .question-buttons button {
+            padding: 10px 15px;
+            background-color: transparent;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .question-buttons button:hover {
+            background-color: #3a5bd3;
+        }
+
+        .input-area input[type="text"] {
+            flex-grow: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .input-area input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .input-area button {
+            width: 36px;
+            height: 36px;
+            background-color: #4A6DFF;
+            color: white;
+            border: none;
+            border-radius: 10%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .input-area button:hover {
+            background-color: #3a5bd3;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="header">Eve</div>
+        <div class="chat-box" id="chat-box"></div>
+        <div class="bottom-section">
+            <div class="question-buttons">
+                <button onclick="sendQuestion('contact')">Contact<br>Info</button>
+                <button onclick="sendQuestion('courses')">Courses<br>Offered</button>
+                <button onclick="sendQuestion('about')">About<br>Us</button>
+                <button onclick="sendQuestion('micro_degree')">Micro Degree<br>Programs</button>
+
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="user-input" placeholder="Type your message..." autocomplete="off">
+                <button onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function appendMessage(message, className) {
+            const chatBox = document.getElementById('chat-box');
+            const container = document.createElement('div');
+            container.className = 'message-container';
+
+            const icon = document.createElement('div');
+            icon.className = 'message-icon';
+
+            // Replace 'U' and 'B' with images
+            if (className === 'user-message') {
+                icon.innerHTML = '<i class="fa-solid fa-user-tie"></i>';
+                container.style.flexDirection = 'row-reverse'; // User message on the right
+            } else {
+                icon.innerHTML = '<i class="fa-solid fa-robot"></i>';
+                container.style.flexDirection = 'row'; // Bot message on the left
+            }
+
+            const text = document.createElement('div');
+            text.className = className;
+            text.innerHTML = message;
+
+            container.appendChild(icon);
+            container.appendChild(text);
+
+            chatBox.appendChild(container);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            if (className === 'bot-message') {
+                // Create buttons container below the message box
+                const buttonsContainer = document.createElement('div');
+                buttonsContainer.className = 'buttons-container';
+
+                const copyButton = document.createElement('button');
+                copyButton.className = 'copy-button';
+                copyButton.innerHTML = '<i class="fa-regular fa-copy"></i>';
+                copyButton.onclick = () => copyChat(message);
+                buttonsContainer.appendChild(copyButton);
+
+                const reactionButtons = document.createElement('div');
+                reactionButtons.className = 'reaction-buttons';
+
+                const thumbUp = document.createElement('button');
+                thumbUp.innerHTML = '<i class="fa-regular fa-thumbs-up"></i>';
+                const thumbDown = document.createElement('button');
+                thumbDown.innerHTML = '<i class="fa-regular fa-thumbs-down"></i>';
+
+                reactionButtons.appendChild(thumbUp);
+                reactionButtons.appendChild(thumbDown);
+                buttonsContainer.appendChild(reactionButtons);
+
+                chatBox.appendChild(buttonsContainer);
+                chatBox.scrollTop = chatBox.scrollHeight;
+            }
+        }
+
+        function sendQuestion(questionType) {
+            const questionMapping = {
+                'contact': "Can I have the contact details?",
+                'courses': "What courses are offered?",
+                'about': "Tell me about Edify.",
+                'micro_degree': "What are Micro-Degree programs, and how can they benefit me?"
+            };
+            appendMessage(questionMapping[questionType], 'user-message');
+
+            fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ questionType })
+            })
+                .then(response => response.json())
+                .then(data => appendMessage(data.reply, 'bot-message'))
+                .catch(error => console.error('Error:', error));
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById('user-input');
+            const userMessage = userInput.value.trim();
+            if (userMessage) {
+                appendMessage(userMessage, 'user-message');
+                userInput.value = ''; // Clear input field
+
+                fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: userMessage })
+                })
+                    .then(response => response.json())
+                    .then(data => appendMessage(data.reply, 'bot-message'))
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+
+        // Enable "Enter" key to send message
+        document.getElementById('user-input').addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Copy chat to clipboard
+        function copyChat(message) {
+            navigator.clipboard.writeText(message).then(() => {
+                alert("Message copied to clipboard!");
+            });
+        }
+    </script>
+</body>
+</html>
